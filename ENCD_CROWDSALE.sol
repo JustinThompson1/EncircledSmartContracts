@@ -29,7 +29,7 @@ contract ENCD_ICOT is Ownable, ReentrancyGuard {
     uint256 public seedtokensforsale = 16_000_000 * 10 ** 18; //amount availabe for purchase in seed stage: 8%
     uint256 public privatetokensforsale = 30_000_000 * 10 ** 18; //amount availabe for purchase in private stage: 15%
     uint256 public publictokensforsale = 20_000_000 * 10 ** 18; //amount availabe for purchase in public stage: 20%
-
+    bool test = true;
     bool public startLock = false; //locking the start function after execution
 
     uint256 startVTime; //relaese time of the tokens to the buyers (tge), init vesting start
@@ -235,6 +235,7 @@ contract ENCD_ICOT is Ownable, ReentrancyGuard {
      * called after vesting start
      */
     function startTeamVesting() internal {
+        //Team
         ENCDtoken.createVestingSchedule(
             0x02346e9d0173CE68237330CF8305025F2A54520C,
             startVTime,
@@ -242,7 +243,7 @@ contract ENCD_ICOT is Ownable, ReentrancyGuard {
             60 * 60 * 24 * 30 * 36,
             60 * 60 * 24,
             0,
-            4000000
+            4000000 * 10 ** 18
         );
         ENCDtoken.createVestingSchedule(
             0x5F50FE907829c957fF3db0555DcE07729c005618,
@@ -251,7 +252,7 @@ contract ENCD_ICOT is Ownable, ReentrancyGuard {
             60 * 60 * 24 * 30 * 36,
             60 * 60 * 24,
             0,
-            4000000
+            4000000 * 10 ** 18
         );
         ENCDtoken.createVestingSchedule(
             0x921883944a96a7fDDa44588970BE8eb58c3f773a,
@@ -260,7 +261,7 @@ contract ENCD_ICOT is Ownable, ReentrancyGuard {
             60 * 60 * 24 * 30 * 36,
             60 * 60 * 24,
             0,
-            1000000
+            1000000 * 10 ** 18
         );
         ENCDtoken.createVestingSchedule(
             0xFb87EeD8bDCfF1494FAF79d25AE6034E09111642,
@@ -269,7 +270,7 @@ contract ENCD_ICOT is Ownable, ReentrancyGuard {
             60 * 60 * 24 * 30 * 36,
             60 * 60 * 24,
             0,
-            2000000
+            2000000 * 10 ** 18
         );
         ENCDtoken.createVestingSchedule(
             0x63189aE134bb90E7c1E0DBd5c3f342E95a845737,
@@ -278,7 +279,7 @@ contract ENCD_ICOT is Ownable, ReentrancyGuard {
             60 * 60 * 24 * 30 * 36,
             60 * 60 * 24,
             0,
-            2000000
+            2000000 * 10 ** 18
         );
         ENCDtoken.createVestingSchedule(
             0xeaD96e2eaCa0d0eEDcFD0888B4905994ba69D35A,
@@ -287,7 +288,66 @@ contract ENCD_ICOT is Ownable, ReentrancyGuard {
             60 * 60 * 24 * 30 * 36,
             60 * 60 * 24,
             0,
-            7000000
+            7000000 * 10 ** 18
+        );
+        //Advisors
+        ENCDtoken.createVestingSchedule(
+            0xabeDA65B89e9dEcc197f38730aF7838134F89Aa9,
+            startVTime,
+            60 * 60 * 24 * 30 * 6,
+            60 * 60 * 24 * 30 * 8,
+            60 * 60 * 24,
+            0,
+            5000000 * 10 ** 18
+        );
+        ENCDtoken.createVestingSchedule(
+            0x6BE976cA92d9f3d8500aD02a8497e162AD134231,
+            startVTime,
+            60 * 60 * 24 * 30 * 6,
+            60 * 60 * 24 * 30 * 8,
+            60 * 60 * 24,
+            0,
+            5000000 * 10 ** 18
+        );
+        //Marketing
+        ENCDtoken.createVestingSchedule(
+            0xb157Cb8E5cAEc3ffAf81b96E4120bd7cb5fFb222,
+            startVTime,
+            0,
+            60 * 60 * 24 * 30 * 12,
+            60 * 60 * 24,
+            0,
+            14000000 * 10 ** 18
+        );
+        //Reserve
+        ENCDtoken.createVestingSchedule(
+            0x9Fa96Bf3763C53dfAc0fE63edFE962adffaCd4cE,
+            startVTime,
+            0,
+            60 * 60 * 24 * 30 * 24,
+            60 * 60 * 24,
+            0,
+            20000000 * 10 ** 18
+        );
+        //Ecosystem
+        ENCDtoken.createVestingSchedule(
+            0xe325854cfCC89546d9c9bfCFa32967864287bD0C,
+            startVTime,
+            0,
+            60 * 60 * 24 * 30 * 24,
+            60 * 60 * 24,
+            0,
+            30000000 * 10 ** 18
+        );
+        //Rewards
+        ENCDtoken.createVestingSchedule(
+            0x2AbAD5E20594FF4e96E698E1d255f03680A9E4D8,
+            startVTime,
+            0,
+            60 * 60 * 24 * 30 * 24,
+            60 * 60 * 24,
+            0,
+            30000000 * 10 ** 18
         );
     }
 
