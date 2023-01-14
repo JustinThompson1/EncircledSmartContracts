@@ -16,6 +16,8 @@ interface IENCDVesting {
         uint256 _amounttge,
         uint256 _amount
     ) external;
+
+    function transferOwnership(address _newOwner) external;
 }
 
 contract ENCD_ICOT is Ownable, ReentrancyGuard {
@@ -28,8 +30,7 @@ contract ENCD_ICOT is Ownable, ReentrancyGuard {
 
     uint256 public seedtokensforsale = 16_000_000 * 10 ** 18; //amount availabe for purchase in seed stage: 8%
     uint256 public privatetokensforsale = 30_000_000 * 10 ** 18; //amount availabe for purchase in private stage: 15%
-    uint256 public publictokensforsale = 20_000_000 * 10 ** 18; //amount availabe for purchase in public stage: 20%
-    bool test = true;
+
     bool public startLock = false; //locking the start function after execution
 
     uint256 startVTime; //relaese time of the tokens to the buyers (tge), init vesting start
@@ -40,7 +41,6 @@ contract ENCD_ICOT is Ownable, ReentrancyGuard {
         none, //initial stage before the presale starts
         seedstage, //seed stage
         privatstage, //private stage
-        publicstage, //public stage
         icoEnd //ending stage after the presale
     }
 
@@ -72,7 +72,7 @@ contract ENCD_ICOT is Ownable, ReentrancyGuard {
     /**
      * @dev initalize vesting function/
      * @notice call before the start of the presale
-     * @param _starttime sets the relase time in seconts of the purchased tokens (tge)
+     * @param _starttime sets the release time in seconds of the purchased tokens (tge)
      * so e.g. 60 * 60 * 24 * 30 = 2592000 would set the tge to 30 days after calling the function
      */
     function startVesting(uint _starttime) external onlyOwner {
@@ -105,9 +105,7 @@ contract ENCD_ICOT is Ownable, ReentrancyGuard {
             "Check the token allowance, not enough approved!"
         );
         stableToken.safeTransferFrom(msg.sender, address(this), totalPrice);
-        //ICOtoken is in the contract
         transferVesting(msg.sender, _amount);
-        //Encircledtoken.transfer(msg.sender, _amount);
     }
 
     /**
@@ -118,16 +116,13 @@ contract ENCD_ICOT is Ownable, ReentrancyGuard {
     function getPrice() public view returns (uint256 price) {
         require(
             currentStage == Stages.seedstage ||
-                currentStage == Stages.privatstage ||
-                currentStage == Stages.publicstage,
+                currentStage == Stages.privatstage,
             "Sale not active"
         );
         if (currentStage == Stages.seedstage) {
             return 500; //0.02
         } else if (currentStage == Stages.privatstage) {
             return 250; //0.04
-        } else if (currentStage == Stages.publicstage) {
-            return 125; //0.08
         }
     }
 
@@ -137,13 +132,22 @@ contract ENCD_ICOT is Ownable, ReentrancyGuard {
      * 0 - none
      * 1 - seed
      * 2 - private
-     * 3 - public
-     * 4 - end
+     * 3 - end
      */
     function setStage(uint _value) public onlyOwner {
         require(uint(Stages.icoEnd) >= _value, "Stage doesn't exist");
         currentStage = Stages(_value);
         emit StageChanged(_value);
+    }
+
+    /**
+     * @dev adding an outside investment
+     * @param _address address of the outside buyer
+     * @param _amount amount of tokens that the buyer bought !Don't forget to add the decimales 1 = 1000000000000000000 (18*0)
+     */
+    function addInvestment(address _address, uint _amount) external onlyOwner {
+        require(_amount >= 1 * 10 ** 18, "Amount has to be at least 1"); //to make sure caller didn't forget to add the decimals
+        transferVesting(_address, _amount);
     }
 
     /**
@@ -165,6 +169,15 @@ contract ENCD_ICOT is Ownable, ReentrancyGuard {
         );
         stableToken.safeTransfer(msg.sender, amount);
         return true;
+    }
+
+    /**
+     * @dev Regain the ownership of the vesting contract (this is just a precautious measurement to make sure the vesting function could be executed if e.g. a buyer is not able to get the tokens etc.)
+     * @param _address address of the new owner
+     */
+    function changeOwnerOfVestingContract(address _address) external onlyOwner {
+        require(_address != address(0), "Owner can't be the 0 address");
+        ENCDtoken.transferOwnership(_address);
     }
 
     /**
@@ -209,22 +222,6 @@ contract ENCD_ICOT is Ownable, ReentrancyGuard {
                 60 * 60 * 24 * 30 * 12,
                 60 * 60 * 24,
                 (_amount * 1250) / 10000, //12.5%
-                _amount
-            );
-        } else if (currentStage == Stages.publicstage) {
-            require(publictokensforsale > 0, "All tokens sold");
-            require(
-                publictokensforsale >= _amount,
-                "Not enough tokens left for purchase in this stage"
-            );
-            publictokensforsale -= _amount;
-            ENCDtoken.createVestingSchedule(
-                _buyer,
-                startVTime,
-                60 * 60 * 24 * 30 * 2,
-                60 * 60 * 24 * 30 * 6,
-                60 * 60 * 24,
-                (_amount * 2500) / 10000, //25%
                 _amount
             );
         }
